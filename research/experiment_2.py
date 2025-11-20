@@ -1,12 +1,12 @@
 import requests
 import datetime as dt
 import polars as pl
-from rich import print
 import yfinance as yf
 import statsmodels.formula.api as smf
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 
 def get_fund_returns(start: dt.date, end: dt.date) -> pl.DataFrame:
@@ -66,6 +66,9 @@ def create_regression_chart(
         .drop_nulls()
     )
 
+    output_path = Path("results/regression_chart")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
     plt.figure(figsize=(10, 6))
 
     sns.scatterplot(merged.to_pandas(), x="ai_return", y="fund_return")
@@ -78,13 +81,14 @@ def create_regression_chart(
     line_y = coeffs[0] * line_x + coeffs[1]
     plt.plot(line_x, line_y, "r-", linewidth=2)
 
+    plt.title("Fund vs AI Daily Returns")
     plt.xlabel("AI Daily Return (%)")
     plt.ylabel("Fund Daily Return (%)")
 
     plt.xlim([-5, 5])
     plt.ylim([-5, 5])
 
-    plt.show()
+    plt.savefig(output_path.with_suffix(".png"), dpi=300)
 
 def create_returns_chart(fund_returns: pl.DataFrame, ai_returns: pl.DataFrame) -> None:
     merged = (
@@ -97,15 +101,19 @@ def create_returns_chart(fund_returns: pl.DataFrame, ai_returns: pl.DataFrame) -
         )
     )
 
+    output_path = Path("results/returns_chart")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
     plt.figure(figsize=(10, 6))
 
     sns.lineplot(merged, x='date', y='fund_return', label='Fund')
     sns.lineplot(merged, x='date', y='ai_return', label='AI')
 
+    plt.title("Fund vs. AI Cumulative Returns")
     plt.xlabel(None)
     plt.ylabel("Cumulative Product Returns (%)")
 
-    plt.show()
+    plt.savefig(output_path.with_suffix(".png"), dpi=300)
 
 if __name__ == "__main__":
     start = dt.date(2025, 10, 23)
