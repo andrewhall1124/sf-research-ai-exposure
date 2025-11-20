@@ -96,4 +96,4 @@ if __name__ == "__main__":
     fund_weights = get_fund_weights(date_)
     fund_ai_beta = get_fund_ai_beta(fund_weights, bai_betas)
 
-    print(f"Fund AI Beta: {fund_ai_beta:.2f}")
+    print(f"Ex ante AI beta: {fund_ai_beta:.2f}")
