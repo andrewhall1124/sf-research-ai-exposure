@@ -109,9 +109,12 @@ def get_active_weights(
     fund_weights: pl.DataFrame, benchmark_weights: pl.DataFrame
 ) -> pl.DataFrame:
     return (
-        fund_weights.join(benchmark_weights, on='ticker', how='left').with_columns(
+        fund_weights
+        .join(benchmark_weights, on='ticker', how='left').with_columns(
             pl.col('weight').sub('benchmark_weight').alias('active_weight')
-        ).select('ticker', pl.col('active_weight').truediv(pl.col('active_weight').sum()).alias('weight'))
+        )
+        # .select('ticker', pl.col('active_weight').truediv(pl.col('active_weight').sum()).alias('weight'))
+        .select('ticker', pl.col('active_weight').alias('weight'))
     )
 
 
